@@ -5,7 +5,12 @@ meta {
 }
 
 get {
-  url: {{BASE_API}}/customers
+  url: {{BASE_API}}/customers?page=0&size=2
   body: none
   auth: inherit
+}
+
+params:query {
+  page: 0
+  size: 2
 }

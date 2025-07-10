@@ -1,6 +1,7 @@
 package fr.otel.api.entities;
 
 import fr.otel.api.customers.infrastructure.CustomerEntity;
+import fr.otel.api.rooms.infrastructure.RoomEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;

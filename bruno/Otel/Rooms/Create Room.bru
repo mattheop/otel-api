@@ -1,0 +1,19 @@
+meta {
+  name: Create Room
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BASE_API}}/rooms
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "roomNumber": "101A",
+    "roomType": "Deluxe",
+    "price": 120.00
+  }
+} 
