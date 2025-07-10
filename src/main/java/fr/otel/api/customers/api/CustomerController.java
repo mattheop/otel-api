@@ -2,7 +2,8 @@ package fr.otel.api.customers.api;
 
 import fr.otel.api.customers.application.CustomerService;
 import fr.otel.api.customers.domain.Customer;
-import fr.otel.api.api.dto.PageResponseDto;
+import fr.otel.api.core.dto.PageResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +48,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public Customer createCustomer(@RequestBody CustomerRequestDto customerRequestDto) {
+    public Customer createCustomer(@RequestBody @Valid CustomerRequestDto customerRequestDto) {
         Customer customer = CustomerMapper.INSTANCE.requestToDomain(customerRequestDto);
         return customerService.createCustomer(customer);
     }

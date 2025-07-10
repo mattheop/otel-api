@@ -1,4 +1,4 @@
-package fr.otel.api.api.dto;
+package fr.otel.api.core.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

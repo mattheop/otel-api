@@ -1,7 +1,8 @@
 package fr.otel.api.customers.api;
 
-import fr.otel.api.api.dto.ErrorResponseDto;
-import fr.otel.api.api.ErrorType;
+import fr.otel.api.core.ErrorType;
+import fr.otel.api.core.dto.ErrorResponseDto;
+import fr.otel.api.customers.domain.exceptions.CustomerAlreadyExistException;
 import fr.otel.api.customers.domain.exceptions.CustomerNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,19 @@ public class CustomerExceptionHandler {
                 .httpStatusText(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .errorCode(CustomerNotFoundException.class.getSimpleName())
                 .message("The UUID " + ex.getUuid() + " you provided does not match any customer.")
+                .errorType(ErrorType.BUSINESS)
+                .path(request.getRequestURI())
+                .build();
+    }
+
+    @ExceptionHandler(CustomerAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponseDto handleCustomerNotFound(CustomerAlreadyExistException ex, HttpServletRequest request) {
+        return ErrorResponseDto.builder()
+                .httpStatus(HttpStatus.CONFLICT.value())
+                .httpStatusText(HttpStatus.CONFLICT.getReasonPhrase())
+                .errorCode(CustomerAlreadyExistException.class.getSimpleName())
+                .message("The email " + ex.getEmail() + " you provided is already used.")
                 .errorType(ErrorType.BUSINESS)
                 .path(request.getRequestURI())
                 .build();

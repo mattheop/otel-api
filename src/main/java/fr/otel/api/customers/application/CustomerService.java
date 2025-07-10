@@ -3,6 +3,7 @@ package fr.otel.api.customers.application;
 import fr.otel.api.customers.api.CustomerMapper;
 import fr.otel.api.customers.domain.Customer;
 import fr.otel.api.customers.domain.ICustomerService;
+import fr.otel.api.customers.domain.exceptions.CustomerAlreadyExistException;
 import fr.otel.api.customers.domain.exceptions.CustomerNotFoundException;
 import fr.otel.api.customers.infrastructure.CustomerEntity;
 import fr.otel.api.customers.infrastructure.CustomerRepository;
@@ -39,6 +40,10 @@ public class CustomerService implements ICustomerService {
     }
 
     public Customer createCustomer(Customer customer) {
+        if (customerRepository.findByEmail(customer.getEmail()).isPresent()) {
+            throw new CustomerAlreadyExistException(customer.getEmail());
+        }
+
         CustomerEntity customerEntity = CustomerMapper.INSTANCE.domainToEntity(customer);
         CustomerEntity savedEntity = customerRepository.save(customerEntity);
 
