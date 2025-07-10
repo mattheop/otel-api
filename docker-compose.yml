@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: otel-postgress
+    environment:
+      POSTGRES_USER: otel
+      POSTGRES_PASSWORD: otel
+      POSTGRES_DB: otel
+    volumes:
+      - ./sql/:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"
+    networks:
+      - otel-network
+  adminer:
+    image: adminer
+    container_name: otel-adminer
+    ports:
+      - "9090:8080"
+    networks:
+      - otel-network
+
+networks:
+  otel-network:
+    driver: bridge
