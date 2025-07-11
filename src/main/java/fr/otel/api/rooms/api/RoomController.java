@@ -16,25 +16,29 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping
-    public PageResponseDto<Room> getRooms(
+    public PageResponseDto<RoomResponseDto> getRooms(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy
     ) {
-        List<Room> rooms = roomService.fetchAllRooms(page, size, sortBy);
+        List<RoomResponseDto> rooms = roomService.fetchAllRooms(page, size, sortBy)
+                .stream()
+                .map(RoomMapper.INSTANCE::domainToResponseDto)
+                .toList();
+
         long count = roomService.countRooms();
         return new PageResponseDto<>(rooms, page, size, count);
     }
 
     @GetMapping("/{uuid}")
-    public Room getRoom(@PathVariable UUID uuid) {
-        return roomService.getRoom(uuid);
+    public RoomResponseDto getRoom(@PathVariable UUID uuid) {
+        return RoomMapper.INSTANCE.domainToResponseDto(roomService.getRoom(uuid));
     }
 
     @PostMapping
-    public Room createRoom(@RequestBody @Valid RoomRequestDto roomRequestDto) {
+    public RoomResponseDto createRoom(@RequestBody @Valid RoomRequestDto roomRequestDto) {
         Room room = RoomMapper.INSTANCE.requestToDomain(roomRequestDto);
-        return roomService.createRoom(room);
+        return RoomMapper.INSTANCE.domainToResponseDto(roomService.createRoom(room));
     }
 
     @DeleteMapping("/{uuid}")
