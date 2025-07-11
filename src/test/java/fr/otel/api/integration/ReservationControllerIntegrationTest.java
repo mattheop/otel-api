@@ -369,4 +369,45 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         ResponseEntity<String> getResponse = restTemplate.getForEntity(deleteUrl, String.class);
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    void updateReservationSuccessfully() {
+        CustomerRequestDto customerRequest1 = new CustomerRequestDto("Update", "User", "update.user@email.com", "0123456789");
+        Customer customer1 = restTemplate.postForObject(baseUrl + "/customers", customerRequest1, Customer.class);
+        RoomRequestDto roomRequest1 = new RoomRequestDto("201A", "Deluxe", new BigDecimal("120.00"));
+        Room room1 = restTemplate.postForObject(baseUrl + "/rooms", roomRequest1, Room.class);
+        LocalDate startDate = LocalDate.now().plusDays(2);
+        LocalDate endDate = startDate.plusDays(2);
+        ReservationRequestDto createRequest = new ReservationRequestDto(
+            customer1.getId(), room1.getId(), startDate, endDate, "Initial reservation");
+        ReservationResponseDto created = restTemplate.postForObject(baseUrl + "/reservations", createRequest, ReservationResponseDto.class);
+        assertThat(created).isNotNull();
+
+        CustomerRequestDto customerRequest2 = new CustomerRequestDto("Updated", "User", "updated.user@email.com", "0987654321");
+        Customer customer2 = restTemplate.postForObject(baseUrl + "/customers", customerRequest2, Customer.class);
+        RoomRequestDto roomRequest2 = new RoomRequestDto("202B", "Suite", new BigDecimal("200.00"));
+        Room room2 = restTemplate.postForObject(baseUrl + "/rooms", roomRequest2, Room.class);
+
+        // Prepare update
+        LocalDate newStartDate = startDate.plusDays(5);
+        LocalDate newEndDate = newStartDate.plusDays(3);
+        String newNote = "Updated reservation details";
+        ReservationRequestDto updateRequest = new ReservationRequestDto(
+            customer2.getId(), room2.getId(), newStartDate, newEndDate, newNote);
+
+        // Perform update
+        String updateUrl = baseUrl + "/reservations/" + created.getId();
+        HttpEntity<ReservationRequestDto> updateEntity = new HttpEntity<>(updateRequest);
+        ResponseEntity<ReservationResponseDto> updateResponse = restTemplate.exchange(
+            updateUrl, HttpMethod.PUT, updateEntity, ReservationResponseDto.class);
+        assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        ReservationResponseDto updated = updateResponse.getBody();
+        assertThat(updated).isNotNull();
+        assertThat(updated.getId()).isEqualTo(created.getId());
+        assertThat(updated.getCustomer().getId()).isEqualTo(customer2.getId());
+        assertThat(updated.getRoom().getId()).isEqualTo(room2.getId());
+        assertThat(updated.getStartDate()).isEqualTo(newStartDate);
+        assertThat(updated.getEndDate()).isEqualTo(newEndDate);
+        assertThat(updated.getNote()).isEqualTo(newNote);
+    }
 } 

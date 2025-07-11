@@ -20,4 +20,6 @@ public interface IReservationService {
     long countReservations(ReservationFilters filters);
 
     void deleteReservation(UUID uuid);
+
+    Reservation update(UUID reservationId, UUID customerId, UUID roomId, LocalDate startDate, LocalDate endDate, String note) throws ReservationConflictException, CustomerNotFoundException, ReservationNotFoundException, ReservationLockAcquisitionException;
 }
