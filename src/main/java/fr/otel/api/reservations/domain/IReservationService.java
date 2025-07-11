@@ -10,11 +10,12 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IReservationService {
-    List<Reservation> findAll(int page, int size, String orderBy);
+    List<Reservation> findAll(int page, int size, String orderBy, String directionStr, ReservationFilters filters);
 
     Reservation create(UUID customerId, UUID roomId, LocalDate startDate, LocalDate endDate, String note) throws ReservationConflictException, CustomerNotFoundException, ReservationNotFoundException, ReservationLockAcquisitionException;
 
     Reservation getReservation(UUID uuid) throws ReservationNotFoundException;
 
     long countReservations();
+    long countReservations(ReservationFilters filters);
 }

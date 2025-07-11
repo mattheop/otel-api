@@ -4,8 +4,8 @@ import fr.otel.api.core.dto.PageResponseDto;
 import fr.otel.api.core.dto.ValidationErrorResponseDto;
 import fr.otel.api.customers.api.CustomerRequestDto;
 import fr.otel.api.customers.domain.Customer;
-import fr.otel.api.reservations.api.ReservationRequestDto;
-import fr.otel.api.reservations.api.ReservationResponseDto;
+import fr.otel.api.reservations.api.dtos.ReservationRequestDto;
+import fr.otel.api.reservations.api.dtos.ReservationResponseDto;
 import fr.otel.api.rooms.api.RoomRequestDto;
 import fr.otel.api.rooms.domain.Room;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;

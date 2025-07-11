@@ -1,4 +1,4 @@
-package fr.otel.api.reservations.api;
+package fr.otel.api.reservations.api.dtos;
 
 import fr.otel.api.customers.domain.Customer;
 import fr.otel.api.rooms.domain.Room;

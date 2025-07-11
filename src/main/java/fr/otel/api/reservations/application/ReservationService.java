@@ -6,12 +6,14 @@ import fr.otel.api.customers.domain.exceptions.CustomerNotFoundException;
 import fr.otel.api.reservations.api.ReservationMapper;
 import fr.otel.api.reservations.domain.IReservationService;
 import fr.otel.api.reservations.domain.Reservation;
+import fr.otel.api.reservations.domain.ReservationFilters;
 import fr.otel.api.reservations.domain.exceptions.ReservationConflictException;
 import fr.otel.api.reservations.domain.exceptions.ReservationDateRangeInvalidException;
 import fr.otel.api.reservations.domain.exceptions.ReservationLockAcquisitionException;
 import fr.otel.api.reservations.domain.exceptions.ReservationNotFoundException;
 import fr.otel.api.reservations.infrastructure.ReservationEntity;
 import fr.otel.api.reservations.infrastructure.ReservationRepository;
+import fr.otel.api.reservations.infrastructure.ReservationSpecification;
 import fr.otel.api.rooms.domain.IRoomService;
 import fr.otel.api.rooms.domain.Room;
 import fr.otel.api.rooms.domain.exceptions.RoomNotFoundException;
@@ -21,6 +23,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -42,10 +45,17 @@ public class ReservationService implements IReservationService {
     private final RedissonClient redissonClient;
 
     @Override
-    public List<Reservation> findAll(int page, int size, String orderBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(orderBy));
+    public List<Reservation> findAll(int page, int size, String orderBy, String directionStr, ReservationFilters filters) {
+        Sort.Direction direction = Sort.Direction.fromString(directionStr);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, orderBy));
 
-        return reservationRepository.findAll(pageable).stream()
+        Specification<ReservationEntity> reservationSpecification = ReservationSpecification.buildSpec(
+                filters.getId(),
+                filters.getCustomerId(),
+                filters.getRoomId()
+        );
+
+        return reservationRepository.findAll(reservationSpecification, pageable).stream()
                 .map(ReservationMapper.INSTANCE::entityToDomain)
                 .toList();
     }
@@ -110,6 +120,17 @@ public class ReservationService implements IReservationService {
     @Override
     public long countReservations() {
         return reservationRepository.count();
+    }
+
+    @Override
+    public long countReservations(ReservationFilters filters) {
+        Specification<ReservationEntity> reservationSpecification = ReservationSpecification.buildSpec(
+                filters.getId(),
+                filters.getCustomerId(),
+                filters.getRoomId()
+        );
+
+        return reservationRepository.count(reservationSpecification);
     }
 
     private boolean isValidDateRange(LocalDate startDate, LocalDate endDate) {

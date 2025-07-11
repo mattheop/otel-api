@@ -1,12 +1,17 @@
 package fr.otel.api.reservations.api;
 
 import fr.otel.api.core.dto.PageResponseDto;
+import fr.otel.api.reservations.api.dtos.ReservationFindRequestDto;
+import fr.otel.api.reservations.api.dtos.ReservationRequestDto;
+import fr.otel.api.reservations.api.dtos.ReservationResponseDto;
 import fr.otel.api.reservations.domain.Reservation;
 import fr.otel.api.reservations.application.ReservationService;
+import fr.otel.api.reservations.domain.ReservationFilters;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,18 +31,25 @@ public class ReservationController {
 
     @GetMapping
     public PageResponseDto<ReservationResponseDto> getReservations(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            Sort sort) {
-        List<ReservationResponseDto> reservationResponseDtos = reservationService.findAll(page, size, sortBy)
+            @ModelAttribute @Valid ReservationFindRequestDto request) {
+        ReservationFilters reservationFilters = ReservationFilters.builder()
+                .customerId(request.getCustomerId())
+                .roomId(request.getRoomId())
+                .id(request.getId())
+                .build();
+
+        List<ReservationResponseDto> reservationResponseDtos = reservationService.findAll(request.getPage(),
+                        request.getSize(),
+                        request.getSortBy(),
+                        request.getDirection(),
+                        reservationFilters)
                 .stream()
                 .map(ReservationMapper.INSTANCE::domainToResponseDto)
                 .toList();
 
-        long totalCount = reservationService.countReservations();
+        long totalCount = reservationService.countReservations(reservationFilters);
 
-        return new PageResponseDto<>(reservationResponseDtos, page, size, totalCount);
+        return new PageResponseDto<>(reservationResponseDtos, request.getPage(), request.getSize(), totalCount);
     }
 
     @GetMapping("/{uuid}")

@@ -1,4 +1,4 @@
-package fr.otel.api.reservations.api;
+package fr.otel.api.reservations.api.dtos;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
