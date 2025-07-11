@@ -21,6 +21,23 @@ services:
       - "9090:8080"
     networks:
       - otel-network
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    container_name: otel-keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: db
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: otel
+      KC_DB_USERNAME: otel
+      KC_DB_PASSWORD: otel
+    ports:
+      - "9696:8080"
+    networks:
+      - otel-network
 
 networks:
   otel-network:
