@@ -6,6 +6,7 @@ import fr.otel.api.customers.domain.exceptions.CustomerAlreadyExistException;
 import fr.otel.api.customers.domain.exceptions.CustomerNotFoundException;
 import fr.otel.api.reservations.domain.exceptions.ReservationConflictException;
 import fr.otel.api.reservations.domain.exceptions.ReservationDateRangeInvalidException;
+import fr.otel.api.reservations.domain.exceptions.ReservationLockAcquisitionException;
 import fr.otel.api.reservations.domain.exceptions.ReservationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,19 @@ public class ReservationExceptionHandler {
                 .errorCode(ReservationDateRangeInvalidException.class.getSimpleName())
                 .message(ex.getMessage())
                 .errorType(ErrorType.BUSINESS)
+                .path(request.getRequestURI())
+                .build();
+    }
+
+    @ExceptionHandler(ReservationLockAcquisitionException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponseDto handleReservationInvalidDateRangeException(ReservationLockAcquisitionException ex, HttpServletRequest request) {
+        return ErrorResponseDto.builder()
+                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .httpStatusText(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .errorCode(ReservationLockAcquisitionException.class.getSimpleName())
+                .message(ex.getMessage())
+                .errorType(ErrorType.TECHNICAL)
                 .path(request.getRequestURI())
                 .build();
     }

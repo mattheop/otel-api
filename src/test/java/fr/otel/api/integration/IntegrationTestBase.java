@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -32,7 +33,6 @@ public abstract class IntegrationTestBase {
         baseUrl = "http://localhost:" + port;
     }
 
-    
     @Container
     @SuppressWarnings("resource")
     protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
@@ -40,17 +40,23 @@ public abstract class IntegrationTestBase {
             .withUsername("oteluser")
             .withPassword("otelpass")
             .withClasspathResourceMapping(
-                "sql/1-init.sql",
-                "/docker-entrypoint-initdb.d/1-init.sql",
-                BindMode.READ_ONLY
+                    "sql/1-init.sql",
+                    "/docker-entrypoint-initdb.d/1-init.sql",
+                    BindMode.READ_ONLY
             );
+
+    @Container
+    @SuppressWarnings("resource")
+    protected static final GenericContainer<?> valkey = new GenericContainer<>("valkey/valkey:latest")
+            .withExposedPorts(6379);
 
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+
+        registry.add("spring.data.redis.host", valkey::getHost);
+        registry.add("spring.data.redis.port", () -> valkey.getMappedPort(6379));
     }
-
-
-} 
+}

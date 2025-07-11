@@ -2,8 +2,7 @@ package fr.otel.api.reservations.api;
 
 import fr.otel.api.core.dto.PageResponseDto;
 import fr.otel.api.reservations.domain.Reservation;
-import fr.otel.api.reservations.domain.application.ReservationService;
-import fr.otel.api.rooms.infrastructure.RoomEntity;
+import fr.otel.api.reservations.application.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;

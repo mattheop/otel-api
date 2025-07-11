@@ -14,6 +14,7 @@ services:
       - "5432:5432"
     networks:
       - otel-network
+
   adminer:
     image: adminer
     container_name: otel-adminer
@@ -21,6 +22,7 @@ services:
       - "9090:8080"
     networks:
       - otel-network
+
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.1
     container_name: otel-keycloak
@@ -36,6 +38,14 @@ services:
       KC_DB_PASSWORD: otel
     ports:
       - "9696:8080"
+    networks:
+      - otel-network
+
+  valkey:
+    image: valkey/valkey:latest
+    container_name: otel-valkey
+    ports:
+      - "6379:6379"
     networks:
       - otel-network
 
