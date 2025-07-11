@@ -83,6 +83,11 @@ public class ReservationService implements IReservationService {
         return ReservationMapper.INSTANCE.entityToDomain(reservation.get());
     }
 
+    @Override
+    public long countReservations() {
+        return reservationRepository.count();
+    }
+
     private boolean isValidDateRange(LocalDate startDate, LocalDate endDate) {
         if (startDate == null || endDate == null) {
             return false;

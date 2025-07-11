@@ -1,5 +1,6 @@
 package fr.otel.api.integration;
 
+import fr.otel.api.core.dto.PageResponseDto;
 import fr.otel.api.core.dto.ValidationErrorResponseDto;
 import fr.otel.api.customers.api.CustomerRequestDto;
 import fr.otel.api.customers.domain.Customer;
@@ -94,11 +95,11 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
 
         int pageSize = 2;
         String url = baseUrl + "/reservations?page=0&size=" + pageSize;
-        ResponseEntity<ReservationResponseDto[]> response = restTemplate.getForEntity(url, ReservationResponseDto[].class);
+        ResponseEntity<PageResponseDto> response = restTemplate.getForEntity(url, PageResponseDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        ReservationResponseDto[] reservations = response.getBody();
+        PageResponseDto<ReservationResponseDto> reservations = response.getBody();
         assertThat(reservations).isNotNull();
-        assertThat(reservations.length).isLessThanOrEqualTo(pageSize);
+        assertThat(reservations.getSize()).isLessThanOrEqualTo(pageSize);
     }
 
     @Test
@@ -337,9 +338,9 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
     void getReservationsWithSorting() {
         // Test sorting by different fields
         String url = baseUrl + "/reservations?page=0&size=5&sortBy=startDate";
-        ResponseEntity<ReservationResponseDto[]> response = restTemplate.getForEntity(url, ReservationResponseDto[].class);
+        ResponseEntity<PageResponseDto> response = restTemplate.getForEntity(url, PageResponseDto.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        ReservationResponseDto[] reservations = response.getBody();
+        PageResponseDto<ReservationResponseDto> reservations = response.getBody();
         assertThat(reservations).isNotNull();
     }
 } 

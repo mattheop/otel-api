@@ -15,4 +15,6 @@ public interface IReservationService {
     Reservation create(UUID customerId, UUID roomId, LocalDate startDate, LocalDate endDate, String note) throws ReservationConflictException, CustomerNotFoundException, ReservationNotFoundException;
 
     Reservation getReservation(UUID uuid) throws ReservationNotFoundException;
+
+    long countReservations();
 }

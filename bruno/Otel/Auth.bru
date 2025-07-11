@@ -20,3 +20,7 @@ body:form-urlencoded {
   username: desk01
   password: desk01
 }
+
+script:post-response {
+  bru.setEnvVar('ACCESS_TOKEN', res.body.access_token);
+}

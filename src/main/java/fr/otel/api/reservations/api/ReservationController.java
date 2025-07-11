@@ -1,10 +1,12 @@
 package fr.otel.api.reservations.api;
 
+import fr.otel.api.core.dto.PageResponseDto;
 import fr.otel.api.reservations.domain.Reservation;
 import fr.otel.api.reservations.domain.application.ReservationService;
 import fr.otel.api.rooms.infrastructure.RoomEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,15 +26,19 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping
-    public List<ReservationResponseDto> getReservations(
+    public PageResponseDto<ReservationResponseDto> getReservations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy
-    ) {
-        return reservationService.findAll(page, size, sortBy)
+            @RequestParam(defaultValue = "id") String sortBy,
+            Sort sort) {
+        List<ReservationResponseDto> reservationResponseDtos = reservationService.findAll(page, size, sortBy)
                 .stream()
                 .map(ReservationMapper.INSTANCE::domainToResponseDto)
                 .toList();
+
+        long totalCount = reservationService.countReservations();
+
+        return new PageResponseDto<>(reservationResponseDtos, page, size, totalCount);
     }
 
     @GetMapping("/{uuid}")

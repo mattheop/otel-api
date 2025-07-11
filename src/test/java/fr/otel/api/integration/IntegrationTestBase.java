@@ -3,7 +3,9 @@ package fr.otel.api.integration;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.BindMode;
@@ -16,6 +18,8 @@ import fr.otel.api.ApiApplication;
 @Testcontainers
 @SpringBootTest(classes = ApiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@Import(TestSecurityConfig.class)
+@ActiveProfiles("test")
 public abstract class IntegrationTestBase {
 
     @LocalServerPort
