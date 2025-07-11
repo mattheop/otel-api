@@ -144,4 +144,12 @@ public class ReservationService implements IReservationService {
 
         return endDate.isAfter(startDate.plusDays(1));
     }
+
+    @Override
+    public void deleteReservation(UUID uuid) {
+        if (!reservationRepository.existsById(uuid)) {
+            throw new ReservationNotFoundException(uuid);
+        }
+        reservationRepository.deleteById(uuid);
+    }
 }

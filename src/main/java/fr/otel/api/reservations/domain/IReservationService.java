@@ -18,4 +18,6 @@ public interface IReservationService {
 
     long countReservations();
     long countReservations(ReservationFilters filters);
+
+    void deleteReservation(UUID uuid);
 }

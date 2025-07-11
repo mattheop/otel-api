@@ -342,4 +342,31 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         PageResponseDto<ReservationResponseDto> reservations = response.getBody();
         assertThat(reservations).isNotNull();
     }
+
+    @Test
+    void deleteReservationAndVerifyNotFound() {
+        CustomerRequestDto customerRequest = new CustomerRequestDto("Delete", "Test", "delete.test@email.com", "0123456789");
+        Customer customer = restTemplate.postForObject(baseUrl + "/customers", customerRequest, Customer.class);
+        RoomRequestDto roomRequest = new RoomRequestDto("999Z", "DeleteTest", new BigDecimal("50.00"));
+        Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
+
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = startDate.plusDays(2);
+        ReservationRequestDto request = new ReservationRequestDto(
+            customer.getId(),
+            room.getId(),
+            startDate,
+            endDate,
+            "Reservation to delete"
+        );
+        ReservationResponseDto created = restTemplate.postForObject(baseUrl + "/reservations", request, ReservationResponseDto.class);
+        assertThat(created).isNotNull();
+
+        String deleteUrl = baseUrl + "/reservations/" + created.getId();
+        ResponseEntity<Void> deleteResponse = restTemplate.exchange(deleteUrl, HttpMethod.DELETE, null, Void.class);
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ResponseEntity<String> getResponse = restTemplate.getForEntity(deleteUrl, String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
 } 
