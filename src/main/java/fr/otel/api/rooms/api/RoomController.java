@@ -1,11 +1,17 @@
 package fr.otel.api.rooms.api;
 
+import fr.otel.api.reservations.api.dtos.ReservationFindRequestDto;
+import fr.otel.api.rooms.api.dtos.RoomFindRequestDto;
+import fr.otel.api.rooms.api.dtos.RoomRequestDto;
+import fr.otel.api.rooms.api.dtos.RoomResponseDto;
 import fr.otel.api.rooms.application.RoomService;
+import fr.otel.api.rooms.domain.IRoomService;
 import fr.otel.api.rooms.domain.Room;
 import fr.otel.api.core.dto.PageResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -13,21 +19,26 @@ import java.util.UUID;
 @RequestMapping("/rooms")
 @RequiredArgsConstructor
 public class RoomController {
-    private final RoomService roomService;
+    private final IRoomService roomService;
 
     @GetMapping
     public PageResponseDto<RoomResponseDto> getRooms(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy
-    ) {
-        List<RoomResponseDto> rooms = roomService.fetchAllRooms(page, size, sortBy)
+            @ModelAttribute @Valid RoomFindRequestDto reservationFindRequestDto) {
+
+        List<RoomResponseDto> rooms = roomService.fetchAllRooms(reservationFindRequestDto.getPage(),
+                        reservationFindRequestDto.getSize(),
+                        reservationFindRequestDto.getSortBy(),
+                        reservationFindRequestDto.getDirection(),
+                        reservationFindRequestDto.getFrom(),
+                        reservationFindRequestDto.getTo(),
+                        reservationFindRequestDto.getIsAvailable()
+                )
                 .stream()
                 .map(RoomMapper.INSTANCE::domainToResponseDto)
                 .toList();
 
         long count = roomService.countRooms();
-        return new PageResponseDto<>(rooms, page, size, count);
+        return new PageResponseDto<>(rooms, reservationFindRequestDto.getPage(), reservationFindRequestDto.getSize(), count);
     }
 
     @GetMapping("/{uuid}")

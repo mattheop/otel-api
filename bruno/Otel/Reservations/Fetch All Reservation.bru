@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{BASE_API}}/reservations?page=0&size=10&sortBy=createdAt&roomId=9d450eb2-35e4-4ae5-8813-991ff5c8adc0&customerId=2d94a758-42d7-4609-a1ce-9e5c9ef9729b
+  url: {{BASE_API}}/reservations?page=0&size=10&sortBy=createdAt&roomId=9d450eb2-35e4-4ae5-8813-991ff5c8adc0&customerId=2d94a758-42d7-4609-a1ce-9e5c9ef9729b&direction=desc
   body: none
   auth: inherit
 }
@@ -16,5 +16,6 @@ params:query {
   sortBy: createdAt
   roomId: 9d450eb2-35e4-4ae5-8813-991ff5c8adc0
   customerId: 2d94a758-42d7-4609-a1ce-9e5c9ef9729b
+  direction: desc
   ~id: 8aea99e3-d180-4037-a0e9-de5b662c602b
 }

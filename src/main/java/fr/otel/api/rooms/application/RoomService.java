@@ -11,19 +11,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import fr.otel.api.rooms.infrastructure.RoomSpecification;
 
 @RequiredArgsConstructor
 @Service
 public class RoomService implements IRoomService {
     private final RoomRepository roomRepository;
 
-    public List<Room> fetchAllRooms(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return roomRepository.findAll(pageable).stream()
+    public List<Room> fetchAllRooms(int page, int size, String sortBy, String directionStr, LocalDate fromDate, LocalDate toDate, Boolean available) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(directionStr), sortBy));
+        Specification<RoomEntity> roomEntitySpecification = RoomSpecification.buildSpec(available, fromDate, toDate);
+
+        return roomRepository.findAll(roomEntitySpecification, pageable).stream()
                 .map(RoomMapper.INSTANCE::entityToDomain)
                 .toList();
     }

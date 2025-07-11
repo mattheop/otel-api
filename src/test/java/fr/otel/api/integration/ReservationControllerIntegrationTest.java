@@ -6,7 +6,7 @@ import fr.otel.api.customers.api.CustomerRequestDto;
 import fr.otel.api.customers.domain.Customer;
 import fr.otel.api.reservations.api.dtos.ReservationRequestDto;
 import fr.otel.api.reservations.api.dtos.ReservationResponseDto;
-import fr.otel.api.rooms.api.RoomRequestDto;
+import fr.otel.api.rooms.api.dtos.RoomRequestDto;
 import fr.otel.api.rooms.domain.Room;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

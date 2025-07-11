@@ -32,6 +32,9 @@ public class RoomEntity {
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    private java.util.List<fr.otel.api.reservations.infrastructure.ReservationEntity> reservations;
+
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now();

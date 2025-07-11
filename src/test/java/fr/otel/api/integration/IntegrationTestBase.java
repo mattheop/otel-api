@@ -15,6 +15,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import fr.otel.api.ApiApplication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @Testcontainers
 @SpringBootTest(classes = ApiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,9 +30,19 @@ public abstract class IntegrationTestBase {
 
     String baseUrl;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void setUp() {
         baseUrl = "http://localhost:" + port;
+        cleanDatabase();
+    }
+
+    void cleanDatabase() {
+        jdbcTemplate.execute("DELETE FROM reservations");
+        jdbcTemplate.execute("DELETE FROM rooms");
+        jdbcTemplate.execute("DELETE FROM customers");
     }
 
     @Container

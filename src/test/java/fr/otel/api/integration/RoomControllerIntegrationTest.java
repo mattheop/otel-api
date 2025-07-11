@@ -2,16 +2,21 @@ package fr.otel.api.integration;
 
 import fr.otel.api.core.dto.PageResponseDto;
 import fr.otel.api.core.dto.ValidationErrorResponseDto;
-import fr.otel.api.rooms.api.RoomRequestDto;
+import fr.otel.api.rooms.api.dtos.RoomRequestDto;
 import fr.otel.api.rooms.domain.Room;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import fr.otel.api.customers.api.CustomerRequestDto;
+import fr.otel.api.customers.domain.Customer;
+import fr.otel.api.reservations.api.dtos.ReservationRequestDto;
+import fr.otel.api.reservations.api.dtos.ReservationResponseDto;
 
 class RoomControllerIntegrationTest extends IntegrationTestBase {
 
@@ -96,5 +101,49 @@ class RoomControllerIntegrationTest extends IntegrationTestBase {
         assertThat(response.getStatusCode().is4xxClientError()).isTrue();
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getValidationErrors().isEmpty()).isFalse();
+    }
+
+    @Test
+    void getAvailableRoomsWithOverlappingReservationReturnsEmpty() {
+        RoomRequestDto roomRequest = new RoomRequestDto("201A", "Deluxe", new BigDecimal("150.00"));
+        Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
+        assertThat(room).isNotNull();
+
+        CustomerRequestDto customerRequest = new CustomerRequestDto("Test", "User", "test.user@email.com", "0123456789");
+        Customer customer = restTemplate.postForObject(baseUrl + "/customers", customerRequest, Customer.class);
+        assertThat(customer).isNotNull();
+
+        ReservationRequestDto reservationRequest = new ReservationRequestDto(
+            customer.getId(),
+            room.getId(),
+            LocalDate.of(2026, 6, 10),
+            LocalDate.of(2026, 6, 12),
+            "Test reservation"
+        );
+        ReservationResponseDto reservation = restTemplate.postForObject(baseUrl + "/reservations", reservationRequest, ReservationResponseDto.class);
+        assertThat(reservation).isNotNull();
+
+        String url = baseUrl + "/rooms?isAvailable=1&from=2026-06-11&to=2026-06-11";
+        ResponseEntity<PageResponseDto> response = restTemplate.getForEntity(url, PageResponseDto.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        PageResponseDto page = response.getBody();
+        assertThat(page).isNotNull();
+        assertThat(page.getData()).isEmpty();
+    }
+
+    @Test
+    void getAvailableRoomsWithNoOverlappingReservationReturnsRoom() {
+        RoomRequestDto roomRequest = new RoomRequestDto("202B", "Standard", new BigDecimal("100.00"));
+        Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
+        assertThat(room).isNotNull();
+
+        String url = baseUrl + "/rooms?isAvailable=1&from=2026-06-11&to=2026-06-11";
+        ResponseEntity<PageResponseDto> response = restTemplate.getForEntity(url, PageResponseDto.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        PageResponseDto page = response.getBody();
+        assertThat(page).isNotNull();
+        assertThat(page.getData()).isNotEmpty();
+        boolean found = page.getData().stream().anyMatch(r -> ((java.util.LinkedHashMap<?, ?>) r).get("id").equals(room.getId().toString()));
+        assertThat(found).isTrue();
     }
 } 

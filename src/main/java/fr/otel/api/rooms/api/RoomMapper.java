@@ -1,5 +1,7 @@
 package fr.otel.api.rooms.api;
 
+import fr.otel.api.rooms.api.dtos.RoomRequestDto;
+import fr.otel.api.rooms.api.dtos.RoomResponseDto;
 import fr.otel.api.rooms.domain.Room;
 import fr.otel.api.rooms.infrastructure.RoomEntity;
 import org.mapstruct.Mapper;
