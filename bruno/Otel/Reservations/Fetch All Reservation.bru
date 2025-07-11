@@ -1,0 +1,17 @@
+meta {
+  name: Fetch All Reservation
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{BASE_API}}/reservations?page=0&size=10&sortBy=id
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 0
+  size: 10
+  sortBy: id
+} 
