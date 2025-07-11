@@ -13,4 +13,5 @@ public interface CustomerMapper {
     Customer requestToDomain(CustomerRequestDto customerRequestDto);
 
     CustomerEntity domainToEntity(Customer customer);
+    CustomerResponseDto domainToResponseDto(Customer customer);
 }

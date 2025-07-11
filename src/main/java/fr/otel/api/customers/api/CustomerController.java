@@ -26,12 +26,15 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
-    public PageResponseDto<Customer> getCustomers(
+    public PageResponseDto<CustomerResponseDto> getCustomers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy
     ) {
-        List<Customer> customers = customerService.fetchAllCustomers(page, size, sortBy);
+        List<CustomerResponseDto> customers = customerService.fetchAllCustomers(page, size, sortBy)
+                .stream()
+                .map(CustomerMapper.INSTANCE::domainToResponseDto)
+                .toList();
         long count = customerService.countCustomers();
 
         return new PageResponseDto<>(
@@ -43,14 +46,14 @@ public class CustomerController {
     }
 
     @GetMapping("/{uuid}")
-    public Customer getCustomer(@PathVariable UUID uuid) {
-        return customerService.getCustomer(uuid);
+    public CustomerResponseDto getCustomer(@PathVariable UUID uuid) {
+        return CustomerMapper.INSTANCE.domainToResponseDto(customerService.getCustomer(uuid));
     }
 
     @PostMapping
-    public Customer createCustomer(@RequestBody @Valid CustomerRequestDto customerRequestDto) {
+    public CustomerResponseDto createCustomer(@RequestBody @Valid CustomerRequestDto customerRequestDto) {
         Customer customer = CustomerMapper.INSTANCE.requestToDomain(customerRequestDto);
-        return customerService.createCustomer(customer);
+        return CustomerMapper.INSTANCE.domainToResponseDto(customerService.createCustomer(customer));
     }
 
     @DeleteMapping("/{uuid}")
