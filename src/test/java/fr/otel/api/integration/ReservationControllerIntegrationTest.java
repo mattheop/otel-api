@@ -5,7 +5,6 @@ import fr.otel.api.customers.api.CustomerRequestDto;
 import fr.otel.api.customers.domain.Customer;
 import fr.otel.api.reservations.api.ReservationRequestDto;
 import fr.otel.api.reservations.api.ReservationResponseDto;
-import fr.otel.api.reservations.domain.Reservation;
 import fr.otel.api.rooms.api.RoomRequestDto;
 import fr.otel.api.rooms.domain.Room;
 import org.junit.jupiter.api.Test;
@@ -13,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +33,8 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
         assertThat(room).isNotNull();
 
-        OffsetDateTime startDate = OffsetDateTime.now().plusDays(1).withHour(14).withMinute(0).withSecond(0).withNano(0);
-        OffsetDateTime endDate = startDate.plusDays(2);
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = startDate.plusDays(2);
         
         ReservationRequestDto request = new ReservationRequestDto(
             customer.getId(),
@@ -80,8 +79,8 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
 
         for (int i = 0; i < 3; i++) {
-            OffsetDateTime startDate = OffsetDateTime.now().plusDays(i + 1);
-            OffsetDateTime endDate = startDate.plusDays(1);
+            LocalDate startDate = LocalDate.now().plusDays(i + 1);
+            LocalDate endDate = startDate.plusDays(1);
             
             ReservationRequestDto request = new ReservationRequestDto(
                 customer.getId(),
@@ -114,9 +113,9 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         // Create room but not customer
         RoomRequestDto roomRequest = new RoomRequestDto("103C", "Suite", new BigDecimal("200.00"));
         Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
-        
-        OffsetDateTime startDate = OffsetDateTime.now().plusDays(1);
-        OffsetDateTime endDate = startDate.plusDays(2);
+
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = startDate.plusDays(2);
         
         ReservationRequestDto request = new ReservationRequestDto(
             UUID.randomUUID(), // Non-existent customer
@@ -139,9 +138,9 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         // Create customer but not room
         CustomerRequestDto customerRequest = new CustomerRequestDto("Bob", "Wilson", "bob.wilson@email.com", "0555666777");
         Customer customer = restTemplate.postForObject(baseUrl + "/customers", customerRequest, Customer.class);
-        
-        OffsetDateTime startDate = OffsetDateTime.now().plusDays(1);
-        OffsetDateTime endDate = startDate.plusDays(2);
+
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = startDate.plusDays(2);
         
         ReservationRequestDto request = new ReservationRequestDto(
             customer.getId(),
@@ -168,8 +167,8 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
         
         // End date before start date
-        OffsetDateTime startDate = OffsetDateTime.now().plusDays(2);
-        OffsetDateTime endDate = startDate.minusDays(1);
+        LocalDate startDate = LocalDate.now().plusDays(2);
+        LocalDate endDate = startDate.minusDays(1);
         
         ReservationRequestDto request = new ReservationRequestDto(
             customer.getId(),
@@ -196,8 +195,8 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
         
         // Past start date
-        OffsetDateTime startDate = OffsetDateTime.now().minusDays(1);
-        OffsetDateTime endDate = startDate.plusDays(2);
+        LocalDate startDate = LocalDate.now().minusDays(1);
+        LocalDate endDate = startDate.plusDays(2);
         
         ReservationRequestDto request = new ReservationRequestDto(
             customer.getId(),
@@ -237,8 +236,8 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
         
         // Create first reservation
-        OffsetDateTime startDate1 = OffsetDateTime.now().plusDays(1);
-        OffsetDateTime endDate1 = startDate1.plusDays(3);
+        LocalDate startDate1 = LocalDate.now().plusDays(1);
+        LocalDate endDate1 = startDate1.plusDays(3);
         
         ReservationRequestDto request1 = new ReservationRequestDto(
             customer.getId(),
@@ -256,8 +255,8 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         assertThat(response1.getStatusCode()).isEqualTo(HttpStatus.OK);
         
         // Create conflicting reservation (overlapping dates)
-        OffsetDateTime startDate2 = startDate1.plusDays(1); // Overlaps with first reservation
-        OffsetDateTime endDate2 = startDate2.plusDays(2);
+        LocalDate startDate2 = startDate1.plusDays(1); // Overlaps with first reservation
+        LocalDate endDate2 = startDate2.plusDays(2);
         
         ReservationRequestDto request2 = new ReservationRequestDto(
             customer.getId(),
@@ -284,7 +283,7 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
         
         // Same start and end date
-        OffsetDateTime sameDate = OffsetDateTime.now().plusDays(1);
+        LocalDate sameDate = LocalDate.now().plusDays(1);
         
         ReservationRequestDto request = new ReservationRequestDto(
             customer.getId(),
@@ -311,9 +310,9 @@ class ReservationControllerIntegrationTest extends IntegrationTestBase {
         Room room = restTemplate.postForObject(baseUrl + "/rooms", roomRequest, Room.class);
         
         String longNote = "A".repeat(1000);
-        
-        OffsetDateTime startDate = OffsetDateTime.now().plusDays(1);
-        OffsetDateTime endDate = startDate.plusDays(2);
+
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = startDate.plusDays(2);
         
         ReservationRequestDto request = new ReservationRequestDto(
             customer.getId(),

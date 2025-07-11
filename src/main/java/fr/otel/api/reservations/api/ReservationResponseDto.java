@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -18,8 +19,8 @@ public class ReservationResponseDto {
     private UUID id;
     private Customer customer;
     private Room room;
-    private OffsetDateTime startDate;
-    private OffsetDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String note;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +44,7 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public Reservation create(UUID customerId, UUID roomId, OffsetDateTime startDate, OffsetDateTime endDate, String note) throws ReservationConflictException, RoomNotFoundException, CustomerNotFoundException {
+    public Reservation create(UUID customerId, UUID roomId, LocalDate startDate, LocalDate endDate, String note) throws ReservationConflictException, RoomNotFoundException, CustomerNotFoundException {
         if (!isValidDateRange(startDate, endDate)) {
             throw new ReservationDateRangeInvalidException(startDate, endDate);
         }
@@ -82,7 +83,7 @@ public class ReservationService implements IReservationService {
         return ReservationMapper.INSTANCE.entityToDomain(reservation.get());
     }
 
-    private boolean isValidDateRange(OffsetDateTime startDate, OffsetDateTime endDate) {
+    private boolean isValidDateRange(LocalDate startDate, LocalDate endDate) {
         if (startDate == null || endDate == null) {
             return false;
         }

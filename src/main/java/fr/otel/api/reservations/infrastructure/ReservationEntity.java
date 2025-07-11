@@ -29,10 +29,10 @@ public class ReservationEntity {
     private RoomEntity room;
     
     @Column(name = "start_date", nullable = false)
-    private OffsetDateTime startDate;
+    private LocalDate startDate;
     
     @Column(name = "end_date", nullable = false)
-    private OffsetDateTime endDate;
+    private LocalDate endDate;
     
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;
