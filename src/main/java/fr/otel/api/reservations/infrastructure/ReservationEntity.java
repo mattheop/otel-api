@@ -1,4 +1,4 @@
-package fr.otel.api.entities;
+package fr.otel.api.reservations.infrastructure;
 
 import fr.otel.api.customers.infrastructure.CustomerEntity;
 import fr.otel.api.rooms.infrastructure.RoomEntity;
@@ -29,10 +29,10 @@ public class ReservationEntity {
     private RoomEntity room;
     
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private OffsetDateTime startDate;
     
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private OffsetDateTime endDate;
     
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;
